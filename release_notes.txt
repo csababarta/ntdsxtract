@@ -1,0 +1,133 @@
+Release Notes
+=============
+
+--------------------------------------------------------------------------------
+ * Description
+--------------------------------------------------------------------------------
+
+This framework was developed by the author in order to provide the community
+with a solution to extract forensically important information from the main
+database of Microsoft Active Directory (NTDS.DIT).
+
+The modules are capable of extracting information from NTDS.DIT files obtained
+from the following Windows version:
+ - Windows Server 2003 (32 & 64 bit)
+ - Windows Server 2008 (32 & 64 bit)
+
+The code is written in python and tested on the following platforms:
+ - MacOS
+ - Linux
+
+The framework is capable of extracting information related to:
+ - user objects
+ - group objects
+ - computer objects
+ - deleted objects
+
+--------------------------------------------------------------------------------
+ * Usage
+--------------------------------------------------------------------------------
+
+In order to utilise the framework you should compile and install the library
+libesedb (see below). After that you should run the esedbextract tool against
+the NTDS.DIT file and export all the tables. You can do that with the following
+command:
+
+  esedbexport ntds.dit
+
+This command creates a folder in the current directory called ntds.dit.extract.
+Inside that folder you will find the tables. You should use these tables as an
+input to the modules.
+
+In order to extract password hashes and other encrypted data you should obtain
+the registry from the same domain controller from which the NTDS.DIT file was
+extracted.
+
+--------------------------------------------------------------------------------
+ * Versions
+--------------------------------------------------------------------------------
+
+ v.1.3.1
+---------
+Bugfixes
+ - fixed a bug in the hash dumping routine, when dumping hashes using the ophc
+   format. Thanks to Jakob H. Heidelberg for the bug report
+
+ v1.3
+------
+New features
+ - introduced regular expressions in the --name parameter
+ - introduced new extracted fields related to Dial-In VPN
+     Thanks to Ryan Johnson for the idea and the help
+ 
+Performance improvements
+ - the preprocessing of the database is now a bit faster
+
+Bug fixes
+ - fixed some bugs in the code related to error handling
+
+ v1.2
+------
+New features
+ - Work directories are now used in order to save the internal structures
+    created during the first execution. This solution save a huge amount of
+    time, when the tool is run against the same ntds.dit file.
+ - CSV output is now available
+ - Extracted password hashes can now be saved using two basic file formats:
+   - john the ripper
+     - the LM and NT hashes will be saved in two separate files
+   - ophcrack
+ - Extract supplimental credentials associated with user and computer objects
+ - Output extracted kerberos keys to .keytab file (many thanks to Sergey Kubasov
+    for this feature - <kubasov.s@gmail.com>)
+
+Bug fixes
+ - fixed some bugs in the code related to output modules and internal logic
+ 
+dskeytab.py implementation notes (by Sergey)
+
+  dskeytab.py extracts kerberos keys from Microsoft Active Directory database
+  file (NTDS.DIT) into a .keytab file. You may use the generated keytab file
+  to decode kerberos traffic with WireShark.
+
+  The current implementation has some issues restricting application of the
+  generated keytab file. Some fields of the generated file contain fabricated
+  data, therefore you cannot use this file to deploy a KDC replacing Domain
+  Controller. Luckily these limitations does not prevent WireShark to decrypt
+  network traffic.
+
+  Issues
+
+  Key version numbers are arbitrary. I did not manage to find where the actual
+  key version numbers are stored in Active Directory. I used a decreasing
+  sequence of numbers as kvn with the oldest key being assigned number 1.
+  See dskeytab.py file, dsPrincipalKeytabFromSupplementalCredentials()
+  function for more details.
+
+  I am not sure how principals must be identified in keytab file.
+  I've used SAM account name for both user and computer principals.
+  Maybe SPNs must be used for computer accounts? For instance, user
+  user1@universe.net is encoded in keytab file as follows
+  realm = "universe.net", components = [ "user1" ].
+
+  One more trouble is detecting the realm of the current Active Directory
+  database, see dskeytab.py file, dsReadNtdsMachineDNName() function for more
+  details.
+
+  Notes
+  
+  The code was tested on Active Directory deployed on Windows Server 2008 R2.
+  For information about keytab file format see
+    http://www.ioplex.com/utilities/keytab.txt.
+ 
+ v1.0
+------
+The first release of the tool with the following modules
+ - dsfileinformation.py (time and date information related to the NTDS.DIT
+                         database file)
+ - dstimeline.py        (timeline generation module)
+ - dsdeletedobjects.py  (module that can extract information related to
+                         deleted objects)
+ - dsusers.py           (extracts information related to user objects)
+ - dsgroups.py          (extracts information related to group objects)
+ - dscomputers.py       (extracts information related to computer objects)
