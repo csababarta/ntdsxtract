@@ -19,6 +19,9 @@
 @contact:       csaba.barta@gmail.com
 '''
 
+def format_ocl(user,hash):
+    return user + ':' + hash
+
 def format_john(user, sid, hash, type):
     if type == 'NT':
         return user + ':$NT$' + hash + ':' + str(sid) + '::'

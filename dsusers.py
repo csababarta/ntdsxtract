@@ -63,6 +63,8 @@ def usage():
     sys.stderr.write("\n          ophc - OphCrack format")
     sys.stderr.write("\n                 When this format is specified the NT output file will be used")
     sys.stderr.write("\n          john - John The Ripper format")
+    sys.stderr.write("\n          ocl  - oclHashcat format")
+    sys.stderr.write("\n                 When this format is specified the NT output file will be used")
     sys.stderr.write("\n    --passwordhashes")
     sys.stderr.write("\n          Extract password hashes")
     sys.stderr.write("\n    --passwordhistory")
@@ -111,6 +113,9 @@ def processUser(user):
                 if pwdformat == 'john':
                     sys.stdout.write("\n\t" + format_john(user.SAMAccountName,str(user.SID),lm,'LM'))
                     lmof.writelines(format_john(user.SAMAccountName, str(user.SID), lm, 'LM') + "\n")
+                if pwdformat == 'ocl':
+                    sys.stdout.write("\n\t" + format_ocl(user.SAMAccountName, lm))
+                    lmof.writelines(format_ocl(user.SAMAccountName, lm) + "\n")
             if pwdformat == 'ophc':
                 if lm != '':
                     sys.stdout.write("\n\t" + format_ophc(user.SAMAccountName,str(user.SID),lm,nt))
@@ -118,6 +123,10 @@ def processUser(user):
                 else:
                     sys.stdout.write("\n\t" + format_ophc(user.SAMAccountName,str(user.SID),"",nt))
                     ntof.writelines(format_ophc(user.SAMAccountName, str(user.SID), "", nt) + "\n")
+            if pwdformat == 'ocl':
+                sys.stdout.write("\n\t" + format_ocl(user.SAMAccountName, nt))
+                ntof.writelines(format_ocl(user.SAMAccountName, nt) + "\n")
+                
     
     if pwhdump == True:
         sys.stdout.write("\nPassword history:")
@@ -137,11 +146,24 @@ def processUser(user):
                         sys.stdout.write("\n\t" + format_john(user.SAMAccountName + "_lmhistory" + str(hashid), str(user.SID), lmhash, 'LM'))
                         lmof.writelines(format_john(user.SAMAccountName + "_lmhistory" + str(hashid), str(user.SID), lmhash, 'LM') + "\n")
                         hashid += 1
+            if pwdformat == 'ocl':
+                hashid = 0
+                for nthash in nthistory:
+                    sys.stdout.write("\n\t" + format_ocl(user.SAMAccountName + "_nthistory" + str(hashid), nthash))
+                    ntof.writelines(format_ocl(user.SAMAccountName + "_nthistory" + str(hashid), nthash) + "\n")
+                    hashid += 1
+                if lmhistory != None:
+                    hashid = 0
+                    for lmhash in lmhistory:
+                        sys.stdout.write("\n\t" + format_ocl(user.SAMAccountName + "_lmhistory" + str(hashid), lmhash))
+                        lmof.writelines(format_ocl(user.SAMAccountName + "_lmhistory" + str(hashid), lmhash) + "\n")
+                        hashid += 1
             if pwdformat == 'ophc':
                 if lmhistory != None:
                     for hashid in range(0,len(nthistory) - 1):
                         sys.stdout.write("\n\t" + format_ophc(user.SAMAccountName + "_history" + str(hashid), str(user.SID), lmhistory[hashid], nthistory[hashid]))
                         ntof.writelines(format_ophc(user.SAMAccountName + "_history" + str(hashid), str(user.SID), lmhistory[hashid], nthistory[hashid]) + "\n")                        
+
     
     if certdump == True and user.Certificate != "":
         sys.stdout.write("\nCertificate:\n")
@@ -334,7 +356,7 @@ if pwdump == True or pwhdump == True:
         sys.stderr.write("\n[!] Error! Missing password hash output file!\n")
         sys.stderr.flush()
         sys.exit(1)
-    if pwdformat == "john" and lmoutfile == "":
+    if (pwdformat == "john" or pwdformat == "ocl") and lmoutfile == "":
         sys.stderr.write("\n[!] Error! Missing LM hash output file!\n")
         sys.stderr.flush()
         sys.exit(1)
@@ -344,7 +366,7 @@ if csvoutfile != "":
 
 if pwdump == True or pwhdump == True:
     ntof = open(path.join(wd, ntoutfile), 'a')
-    if pwdformat == 'john':
+    if pwdformat == 'john' or pwdformat == 'ocl':
         lmof = open(path.join(wd, lmoutfile), 'a')
 
 # Initializing engine
