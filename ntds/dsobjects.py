@@ -552,7 +552,7 @@ class dsSupplCredentials:
         elif Name == u"Packages":
             self.Packages = unhexlify(text[offset:offset+ValueLength]).decode('utf-16').split("\x00")
         elif Name == u"Primary:CLEARTEXT":
-            self.Password = unhexlify(text[offset:offset+ValueLength]).decode('utf-16')
+            self.Password = text[offset:offset+ValueLength]
         else:
             print Name
         return offset + ValueLength
