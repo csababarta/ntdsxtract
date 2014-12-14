@@ -154,6 +154,10 @@ class dsAccount(dsObject):
     BadPwdCount        = -1
     DialInAccessPermission   = -1
     
+    isLocked = False
+    isDisabled = False
+    isActive = True
+    
     def __init__(self, dsDatabase, dsRecordId):
         '''
         Constructor
@@ -165,8 +169,18 @@ class dsAccount(dsObject):
         self.PrincipalName = self.Record[ntds.dsfielddictionary.dsUserPrincipalNameIndex]
         if self.Record[ntds.dsfielddictionary.dsSAMAccountTypeIndex] != "":
             self.SAMAccountType = int(self.Record[ntds.dsfielddictionary.dsSAMAccountTypeIndex])
+        
         if self.Record[ntds.dsfielddictionary.dsUserAccountControlIndex] != "":
             self.UserAccountControl = int(self.Record[ntds.dsfielddictionary.dsUserAccountControlIndex])
+        
+        if self.UserAccountControl != -1:
+            if self.UserAccountControl & int("0x10", 16) == int("0x10", 16):
+                self.isLocked = True
+            if self.UserAccountControl & int("0x2", 16) == int("0x2", 16):
+                self.isDisabled = True
+            if not self.isLocked and not self.isDisabled:
+                self.isActive = True
+        
         if self.Record[ntds.dsfielddictionary.dsPrimaryGroupIdIndex] != "":
             self.PrimaryGroupID = int(self.Record[ntds.dsfielddictionary.dsPrimaryGroupIdIndex])
         if self.Record[ntds.dsfielddictionary.dsLogonCountIndex] != "":
@@ -361,8 +375,14 @@ class dsUser(dsAccount):
             tmpStr += "\n\t%s" % uac
         
         tmpStr += "\nAncestors:\n\t"
-        for ancestor in self.getAncestors(self.DB):
-            tmpStr += "%s " % ancestor.Name
+        ancestors = self.getAncestors(self.DB)
+        i = 0
+        for ancestor in ancestors:
+            if i < len(ancestors)-1:
+                tmpStr += "%s, " % ancestor.Name
+            else:
+                tmpStr += "%s" % ancestor.Name
+            i += 1
             
         return tmpStr
         
@@ -508,24 +528,48 @@ class dsSupplCredentials:
     
     def ParseUserProperties(self, text):
         offset = 0
+        if len(text[offset:offset+4]) != 4:
+            return
         reserved1 = unpack('I', text[offset:offset+4])[0]
         assert reserved1 == 0
+#        print "reserved1: " + str(reserved1)
+        
         offset += 4
+        if len(text[offset:offset+4]) != 4:
+            return
         lengthOfStructure = unpack('I', text[offset:offset+4])[0]
         assert len(text) == lengthOfStructure + 3*4 + 1
+#        print "lengthOfStructure: " + str(lengthOfStructure)
+        
         offset += 4
+        if len(text[offset:offset+2]) != 2:
+            return
         reserved2 = unpack('H', text[offset:offset+2])[0]
         assert reserved2 == 0
+#        print "reserved2: " + str(reserved2)
+        
         offset += 2
+        if len(text[offset:offset+2]) != 2:
+            return
         reserved3 = unpack('H', text[offset:offset+2])[0]
         assert reserved3 == 0
+#        print "reserved3: " + str(reserved3)
+        
         offset += 2
         offset += 96 # reserved4
+        if len(text[offset:offset+2]) < 2:
+            return
         PropertySignature = unpack('H', text[offset:offset+2])[0]
         assert PropertySignature == 0x50
+#        print "PropertySignature: " + str(PropertySignature)
+        
         offset += 2
+        if len(text[offset:offset+2]) < 2:
+            return
         # The number of USER_PROPERTY elements in the UserProperties field.
         PropertyCount = unpack('H', text[offset:offset+2])[0]
+#        print "PropertyCount: " + str(PropertyCount)
+        
         offset += 2
         for i in range(PropertyCount):
             offset = self.ParseUserProperty(text, offset)
@@ -535,14 +579,33 @@ class dsSupplCredentials:
         #assert reserved5 == 0
   
     def ParseUserProperty(self, text, offset):
+        if len(text[offset:offset+2]) != 2:
+            return
         NameLength = unpack('H', text[offset:offset+2])[0]
+#        print "NameLength: " + str(NameLength)
+        
         offset += 2
+        if len(text[offset:offset+2]) != 2:
+            return
         ValueLength = unpack('H', text[offset:offset+2])[0]
+#        print "ValueLength: " + str(ValueLength)
+        
         offset += 2
+        if len(text[offset:offset+2]) != 2:
+            return
         reserved = unpack('H', text[offset:offset+2])[0]
+#        print "reserved: " + str(reserved)
+        
         offset += 2
+        if len(text[offset:offset+2]) != 2:
+            return
         Name = text[offset:offset+NameLength].decode('utf-16')
+#        print "Name: " + Name
+        
         offset += NameLength
+#        print "Length: " + str(len(text[offset:offset+ValueLength]))
+        if len(text[offset:offset+ValueLength]) != ValueLength:
+            return
         if Name == u"Primary:Kerberos-Newer-Keys":
             self.KerberosNewerKeys = self.ParseKerberosNewerKeysPropertyValue(unhexlify(text[offset:offset+ValueLength]))
         elif Name == u"Primary:Kerberos":
@@ -552,7 +615,7 @@ class dsSupplCredentials:
         elif Name == u"Packages":
             self.Packages = unhexlify(text[offset:offset+ValueLength]).decode('utf-16').split("\x00")
         elif Name == u"Primary:CLEARTEXT":
-            self.Password = unhexlify(text[offset:offset+ValueLength]).decode('utf-16')
+            self.Password = unicode(unhexlify(text[offset:offset+ValueLength]).decode('utf-16')).encode('utf8')
         else:
             print Name
         return offset + ValueLength
@@ -585,30 +648,41 @@ class dsSupplCredentials:
     
     def ParseKerberosNewerKeysPropertyValue(self, text):
         try:
-            offset = 0
             keys = dsKerberosNewKeys()
+            
+            offset = 0
             Revision = unpack('H', text[offset:offset+2])[0]
             assert Revision == 4
+
             offset += 2
             Flags = unpack('H', text[offset:offset+2])[0]
             assert Flags == 0
+
             offset += 2
             CredentialCount = unpack('H', text[offset:offset+2])[0]
+
             offset += 2
             ServiceCredentialCount = unpack('H', text[offset:offset+2])[0]
             assert ServiceCredentialCount == 0
+
             offset += 2
             OldCredentialCount = unpack('H', text[offset:offset+2])[0]
+
             offset += 2
             OlderCredentialCount = unpack('H', text[offset:offset+2])[0]
+
             offset += 2
             DefaultSaltLength = unpack('H', text[offset:offset+2])[0]
+
             offset += 2
             DefaultSaltMaximumLength = unpack('H', text[offset:offset+2])[0]
+
             offset += 2
             DefaultSaltOffset = unpack('I', text[offset:offset+4])[0]
+
             offset += 4
             DefaultIterationCount = unpack('I', text[offset:offset+4])[0]
+
             offset += 4
             for i in range(CredentialCount):
                 offset, key = self.KerberosKeyDataNew(text, offset)
@@ -619,33 +693,50 @@ class dsSupplCredentials:
             for i in range(OlderCredentialCount):
                 offset, key = self.KerberosKeyDataNew(text, offset)
                 keys.OlderCredentials.append(key)
+
             # + one blank KeyDataNew record. Record length is 24 bytes,
             offset += 24
             assert offset == DefaultSaltOffset
             keys.DefaultSalt = text[offset:offset+DefaultSaltMaximumLength].decode("utf-16")
+
             return keys
         except:
             return None
 
     def ParseKerberosPropertyValue(self, text):
         try:
-            offset = 0
             keys = dsKerberosNewKeys()
+            
+            offset = 0
             Revision = unpack('H', text[offset:offset+2])[0]
+#            print "Revision: " + str(Revision)
             assert Revision == 3
+
             offset += 2
             Flags = unpack('H', text[offset:offset+2])[0]
+#            print "Flags: " + str(Flags)
             assert Flags == 0
+
             offset += 2
             CredentialCount = unpack('H', text[offset:offset+2])[0]
+#            print "CredentialCount: " + str(CredentialCount)
+
             offset += 2
             OldCredentialCount = unpack('H', text[offset:offset+2])[0]
+#            print "OldCredentialCount: " + str(OldCredentialCount)
+
             offset += 2
             DefaultSaltLength = unpack('H', text[offset:offset+2])[0]
+#            print "DefaultSaltLength: " + str(DefaultSaltLength)
+
             offset += 2
             DefaultSaltMaximumLength = unpack('H', text[offset:offset+2])[0]
+#            print "DefaultSaltMaximumLength: " + str(DefaultSaltMaximumLength)
+
             offset += 2
             DefaultSaltOffset = unpack('I', text[offset:offset+4])[0]
+#            print "DefaultSaltOffset: " + str(DefaultSaltOffset)
+
             offset += 4
             for i in range(CredentialCount):
                 offset, key = self.KerberosKeyData(text, offset)
@@ -653,13 +744,15 @@ class dsSupplCredentials:
             for i in range(OldCredentialCount):
                 offset, key = self.KerberosKeyData(text, offset)
                 keys.OldCredentials.append(key)
+
             # + one blank KeyDataNew record. Record length is 20 bytes,
             offset += 20
-            assert offset == DefaultSaltOffset
-            keys.DefaultSalt = text[offset:offset+DefaultSaltMaximumLength].decode("utf-16")
+            #assert offset == DefaultSaltOffset
+            #keys.DefaultSalt = text[offset:offset+DefaultSaltMaximumLength].decode("utf-16")
+            keys.DefaultSalt = text[DefaultSaltOffset:DefaultSaltOffset+DefaultSaltMaximumLength].decode("utf-16")
             return keys
         except:
-            return None
+               return None
 
     def KerberosKeyDataNew(self, text, offset):
         try:
@@ -690,22 +783,34 @@ class dsSupplCredentials:
         try:
             key = dsKerberosKey()
             Reserved1 = unpack('H', text[offset:offset+2])[0]
+#            print "Reserved1: " + str(Reserved1)
             assert Reserved1 == 0
+            
             offset += 2
             Reserved2 = unpack('H', text[offset:offset+2])[0]
+#            print "Reserved2: " + str(Reserved2)
             assert Reserved2 == 0
+            
             offset += 2
             Reserved3 = unpack('I', text[offset:offset+4])[0]
+#            print "Reserved3: " + str(Reserved3)
             assert Reserved3 == 0
+            
             offset += 4
             key.KeyType = unpack('i', text[offset:offset+4])[0]
+#            print "KeyType: " + str(key.KeyType)
+            
             offset += 4
             KeyLength = unpack('I', text[offset:offset+4])[0]
+#            print "KeyLength: " + str(KeyLength)
+            
             offset += 4
             KeyOffset = unpack('I', text[offset:offset+4])[0]
+#            print "KeyOffset: " + str(KeyOffset)
+            
             offset += 4
             key.Key = text[KeyOffset:KeyOffset+KeyLength]
+#            print "Key: " + str(hexlify(key.Key))
             return offset, key
         except:
             return None
-    
