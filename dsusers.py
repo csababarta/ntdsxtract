@@ -53,6 +53,10 @@ def usage():
     sys.stderr.write("\n          List user identified by GUID")
     sys.stderr.write("\n    --name <user name regexp>")
     sys.stderr.write("\n          List user identified by the regular expression")
+    sys.stderr.write("\n    --active")
+    sys.stderr.write("\n          List only active accounts")
+    sys.stderr.write("\n    --locked")
+    sys.stderr.write("\n          List only locked accounts")
 
     sys.stderr.write("\n    --syshive <path to system hive>")
     sys.stderr.write("\n          Required for password hash and history extraction")
@@ -79,6 +83,8 @@ def usage():
     sys.stderr.write("\n    --csvoutfile <name of the CSV output file>")
     sys.stderr.write("\n          The filename of the csv file to which ntdsxtract should write the")
     sys.stderr.write("\n          output")
+    sys.stderr.write("\n    --debug <name of the CSV output file>")
+    sys.stderr.write("\n          Turn on detailed error messages and stack trace")
     sys.stderr.write("\n")
     
 def processUser(user):
@@ -251,6 +257,8 @@ ntof = None
 lmof = None
 csvof = None
 reName = None
+only_active = False
+only_locked = False
 
 
 sys.stderr.write("\n[+] Started at: %s" % time.strftime(
@@ -271,6 +279,12 @@ for opt in sys.argv:
         name = sys.argv[optid + 1]
         reName = re.compile(name)
         sys.stderr.write("\n\t[-] User name: %s" % name)
+    if opt == "--active":
+        only_active = True
+        sys.stderr.write("\n\t[-] Extracting only active accounts")
+    if opt == "--locked":
+        only_locked = True
+        sys.stderr.write("\n\t[-] Extracting only locked accounts")
     if opt == "--sid":
         if len(sys.argv) < optid + 2:
             usage()
@@ -415,35 +429,66 @@ if sid != "":
         user = None
         try:
             user = dsUser(db, recordid)
+        except KeyboardInterrupt:
+            raise KeyboardInterrupt
         except:
             sys.stderr.write("\n[!] Unable to instantiate user object (record id: %d)" % recordid)
             sys.exit()
-        processUser(user)
+        
+        if only_active == True:
+            if user.isActive == True:
+                processUser(user)
+        elif only_locked == True:
+            if user.isLocked == True:
+                processUser(user)
+        else:
+            processUser(user)
 elif guid !="":
     recordid = int(dsMapRecordIdByGUID[guid])
     if int(dsGetRecordType(db, recordid)) == utype:
         user = None
         try:
             user = dsUser(db, recordid)
+        except KeyboardInterrupt:
+            raise KeyboardInterrupt
         except:
             sys.stderr.write("\n[!] Unable to instantiate user object (record id: %d)" % recordid)
             sys.exit()
-        processUser(user)
+        
+        if only_active == True:
+            if user.isActive == True:
+                processUser(user)
+        elif only_locked == True:
+            if user.isLocked == True:
+                processUser(user)
+        else:
+            processUser(user)
 else:
     for recordid in dsMapRecordIdByTypeId[utype]:
         user = None
         try:
             user = dsUser(db, recordid)
         except KeyboardInterrupt:
-        	raise KeyboardInterrupt
+            raise KeyboardInterrupt
         except:
             sys.stderr.write("\n[!] Unable to instantiate user object (record id: %d)" % recordid)
             continue
             
-        if reName != None and not reName.search(user.Name):
+        if reName != None and \
+           not reName.search(user.Name) and \
+           not reName.search(user.SAMAccountName) and \
+           not reName.search(user.PrincipalName):
             user = None
             continue
-        processUser(user)
+        
+        if user.isActive == True:
+            if user.isLocked == False and user.isDisabled == False:
+                processUser(user)
+        elif only_locked == True:
+            if user.isLocked == True:
+                processUser(user)
+        else:
+            processUser(user)
 
 if csvoutfile != "":
     close_csv()
@@ -452,4 +497,3 @@ if ntof != None:
     ntof.close()
 if lmof != None:
     lmof.close()
-    
