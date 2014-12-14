@@ -21,8 +21,15 @@
 
 import sys
 
+debug = False
+
+for arg in sys.argv:
+    if arg == "--debug":
+        debug = True
+
 def simple_exception(type, value, traceback):
     print "[!] Error!", value
     sys.exit(1)
 
-sys.excepthook = simple_exception
+if debug == False:
+    sys.excepthook = simple_exception
