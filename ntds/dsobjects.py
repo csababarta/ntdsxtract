@@ -582,28 +582,22 @@ class dsSupplCredentials:
         if len(text[offset:offset+2]) != 2:
             return
         NameLength = unpack('H', text[offset:offset+2])[0]
-#        print "NameLength: " + str(NameLength)
-        
         offset += 2
         if len(text[offset:offset+2]) != 2:
             return
         ValueLength = unpack('H', text[offset:offset+2])[0]
-#        print "ValueLength: " + str(ValueLength)
         
         offset += 2
         if len(text[offset:offset+2]) != 2:
             return
         reserved = unpack('H', text[offset:offset+2])[0]
-#        print "reserved: " + str(reserved)
         
         offset += 2
         if len(text[offset:offset+2]) != 2:
             return
         Name = text[offset:offset+NameLength].decode('utf-16')
-#        print "Name: " + Name
         
         offset += NameLength
-#        print "Length: " + str(len(text[offset:offset+ValueLength]))
         if len(text[offset:offset+ValueLength]) != ValueLength:
             return
         if Name == u"Primary:Kerberos-Newer-Keys":
@@ -615,7 +609,10 @@ class dsSupplCredentials:
         elif Name == u"Packages":
             self.Packages = unhexlify(text[offset:offset+ValueLength]).decode('utf-16').split("\x00")
         elif Name == u"Primary:CLEARTEXT":
-            self.Password = unicode(unhexlify(text[offset:offset+ValueLength]).decode('utf-16')).encode('utf8')
+            try:
+                self.Password = unicode(unhexlify(text[offset:offset+ValueLength]).decode('utf-16')).encode('utf8')
+            except:
+                self.Password = dump(unhexlify(text[offset:offset+ValueLength]),16,16)
         else:
             print Name
         return offset + ValueLength
