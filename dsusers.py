@@ -440,7 +440,7 @@ if sid != "":
             if user.isActive == True:
                 processUser(user)
         elif only_locked == True:
-            if user.isLocked == True:
+            if user.isLocked == True or user.isDisabled == True:
                 processUser(user)
         else:
             processUser(user)
@@ -460,7 +460,7 @@ elif guid !="":
             if user.isActive == True:
                 processUser(user)
         elif only_locked == True:
-            if user.isLocked == True:
+            if user.isLocked == True or user.isDisabled == True:
                 processUser(user)
         else:
             processUser(user)
@@ -482,11 +482,11 @@ else:
             user = None
             continue
         
-        if user.isActive == True:
-            if user.isLocked == False and user.isDisabled == False:
+        if only_active == True:
+            if user.isActive == True:
                 processUser(user)
         elif only_locked == True:
-            if user.isLocked == True:
+            if user.isLocked == True or user.isDisabled == True:
                 processUser(user)
         else:
             processUser(user)
