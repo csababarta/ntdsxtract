@@ -90,12 +90,12 @@ def processComputer(computer):
         (lm, nt) = computer.getPasswordHashes()
         if nt != '':
             if pwdformat == 'john':
-                sys.stdout.write("\n\t" + format_john(computer.Name,nt,'NT'))
-                ntof.writelines(format_john(computer.Name, nt, 'NT') + "\n")
+                sys.stdout.write("\n\t" + format_john(computer.Name, computer.SID, nt, 'NT'))
+                ntof.writelines(format_john(computer.Name, computer.SID, nt, 'NT') + "\n")
             if lm != '':
                 if pwdformat == 'john':
-                    sys.stdout.write("\n\t" + format_john(computer.Name,lm,'LM'))
-                    lmof.writelines(format_john(computer.Name, lm, 'LM') + "\n")
+                    sys.stdout.write("\n\t" + format_john(computer.Name, computer.SID, lm, 'LM'))
+                    lmof.writelines(format_john(computer.Name, computer.SID, lm, 'LM') + "\n")
                 if pwdformat == 'ophc':
                     sys.stdout.write("\n\t" + format_ophc(computer.Name, lm, nt))
                     ntof.writelines(format_ophc(computer.Name, lm, nt) + "\n")
