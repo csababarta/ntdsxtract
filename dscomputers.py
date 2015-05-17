@@ -90,15 +90,15 @@ def processComputer(computer):
         (lm, nt) = computer.getPasswordHashes()
         if nt != '':
             if pwdformat == 'john':
-                sys.stdout.write("\n\t" + format_john(computer.Name,nt,'NT'))
-                ntof.writelines(format_john(computer.Name, nt, 'NT') + "\n")
+                sys.stdout.write("\n\t" + format_john(computer.Name,computer.SID,nt,'NT'))
+                ntof.writelines(format_john(computer.Name, computer.SID, nt, 'NT') + "\n")
             if lm != '':
                 if pwdformat == 'john':
-                    sys.stdout.write("\n\t" + format_john(computer.Name,lm,'LM'))
-                    lmof.writelines(format_john(computer.Name, lm, 'LM') + "\n")
+                    sys.stdout.write("\n\t" + format_john(computer.Name,computer.SID,lm,'LM'))
+                    lmof.writelines(format_john(computer.Name, computer.SID, lm, 'LM') + "\n")
                 if pwdformat == 'ophc':
-                    sys.stdout.write("\n\t" + format_ophc(computer.Name, lm, nt))
-                    ntof.writelines(format_ophc(computer.Name, lm, nt) + "\n")
+                    sys.stdout.write("\n\t" + format_ophc(computer.Name,computer.SID, lm, nt))
+                    ntof.writelines(format_ophc(computer.Name,computer.SID, lm, nt) + "\n")
     
     if pwhdump == True:
         sys.stdout.write("\nPassword history:")
@@ -109,20 +109,20 @@ def processComputer(computer):
             if pwdformat == 'john':
                 hashid = 0
                 for nthash in nthistory:
-                    sys.stdout.write("\n\t" + format_john(computer.Name + "_nthistory" + str(hashid), nthash, 'NT'))
-                    ntof.writelines(format_john(computer.Name + "_nthistory" + str(hashid), nthash, 'NT') + "\n")
+                    sys.stdout.write("\n\t" + format_john(computer.Name + "_nthistory" + str(hashid),computer.SID, nthash, 'NT'))
+                    ntof.writelines(format_john(computer.Name + "_nthistory" + str(hashid), nthash,computer.SID, 'NT') + "\n")
                     hashid += 1
                 if lmhistory != None:
                     hashid = 0
                     for lmhash in lmhistory:
-                        sys.stdout.write("\n\t" + format_john(computer.Name + "_lmhistory" + str(hashid), lmhash, 'LM'))
-                        lmof.writelines(format_john(computer.Name + "_lmhistory" + str(hashid), lmhash, 'LM') + "\n")
+                        sys.stdout.write("\n\t" + format_john(computer.Name + "_lmhistory" + str(hashid),computer.SID, lmhash, 'LM'))
+                        lmof.writelines(format_john(computer.Name + "_lmhistory" + str(hashid),computer.SID, lmhash, 'LM') + "\n")
                         hashid += 1
             if pwdformat == 'ophc':
                 if lmhistory != None:
                     for hashid in range(0,len(lmhistory)):
-                        sys.stdout.write("\n\t" + format_ophc(computer.Name + "_history" + str(hashid), lmhistory[hashid], nthistory[hashid]))
-                        ntof.writelines(format_ophc(computer.Name + "_history" + str(hashid), lmhistory[hashid], nthistory[hashid]) + "\n")
+                        sys.stdout.write("\n\t" + format_ophc(computer.Name + "_history" + str(hashid),computer.SID, lmhistory[hashid], nthistory[hashid]))
+                        ntof.writelines(format_ophc(computer.Name + "_history" + str(hashid), computer.SID, lmhistory[hashid], nthistory[hashid]) + "\n")
 
     if bitldump == True:
         sys.stdout.write("\nRecovery information:")
@@ -191,27 +191,12 @@ for opt in sys.argv:
             sys.exit(1)
         syshive = sys.argv[optid + 1]
     if opt == "--passwordhashes":
-        if syshive == "":
-            sys.stderr.write("\n[!] Error! Missing path to system hive! Use --syshive option.\n")
-            sys.stderr.flush()
-            usage()
-            sys.exit(1)
         pwdump = True
         sys.stderr.write("\n\t[-] Extracting password hashes")
     if opt == "--passwordhistory":
-        if syshive == "":
-            sys.stderr.write("\n[!] Error! Missing path to system hive! Use --syshive option.\n")
-            sys.stderr.flush()
-            usage()
-            sys.exit(1)
         pwhdump = True
         sys.stderr.write("\n\t[-] Extracting password history")
     if opt == "--supplcreds":
-        if syshive == "":
-            sys.stderr.write("\n[!] Error! Missing path to system hive! Use --syshive option.\n")
-            sys.stderr.flush()
-            usage()
-            sys.exit(1)
         suppcreddump = True
         sys.stderr.write("\n\t[-] Extracting supplemental credentials")
     if opt == "--bitlocker":
@@ -248,6 +233,13 @@ if not checkfile(sys.argv[1]):
     print("\n[!] Error! datatable cannot be found!")
     sys.exit()
 wd = ensure_dir(sys.argv[2])
+
+if pwdump or pwhdump or suppcreddump:
+    if syshive == "":
+        sys.stderr.write("\n[!] Error! Missing path to system hive! Use --syshive option.\n")
+        sys.stderr.flush()
+        usage()
+        sys.exit(1)
 
 if pwdump == True or pwhdump == True:
     if pwdformat == "":
