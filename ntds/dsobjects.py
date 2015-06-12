@@ -364,7 +364,7 @@ class dsUser(dsAccount):
         tmpStr += "\nLogon count:          %d" % self.LogonCount
         tmpStr += "\nBad password count:   %d" % self.BadPwdCount
         if self.DialInAccessPermission == -1:
-            tmpStr += "\nDial-In access perm:  Controlled by polcy"
+            tmpStr += "\nDial-In access perm:  Controlled by policy"
         elif self.DialInAccessPermission == 1:
             tmpStr += "\nDial-In access perm:  Allow access"
         elif self.DialInAccessPermission == 0:
@@ -423,7 +423,7 @@ class dsComputer(dsAccount):
         tmpStr += "\nWhen created:         %s" % dsGetDSTimeStampStr(self.WhenCreated)
         tmpStr += "\nWhen changed:         %s" % dsGetDSTimeStampStr(self.WhenChanged)
         if self.DialInAccessPermission == -1:
-            tmpStr += "\nDial-In access perm:  Controlled by polcy"
+            tmpStr += "\nDial-In access perm:  Controlled by policy"
         elif self.DialInAccessPermission == 1:
             tmpStr += "\nDial-In access perm:  Allow access"
         elif self.DialInAccessPermission == 0:
