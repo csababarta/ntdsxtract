@@ -54,10 +54,15 @@ def usage():
     sys.stderr.write("\n    --name <user name regexp>")
     sys.stderr.write("\n          List user identified by the regular expression")
     sys.stderr.write("\n    --active")
-    sys.stderr.write("\n          List only active accounts")
+    sys.stderr.write("\n          List only active accounts. This option cannot be used")
+    sys.stderr.write("\n          with --flags.")
     sys.stderr.write("\n    --locked")
-    sys.stderr.write("\n          List only locked accounts")
-
+    sys.stderr.write("\n          List only locked accounts. This option cannot be used")
+    sys.stderr.write("\n          with --flags.")
+    sys.stderr.write("\n    --uac <UserAccountControl flag combination as hex>")
+    sys.stderr.write("\n          List only the accounts that have the specified UAC flag")
+    sys.stderr.write("\n          combination. This option cannot be used with --active or")
+    sys.stderr.write("\n          --locked")
     sys.stderr.write("\n    --syshive <path to system hive>")
     sys.stderr.write("\n          Required for password hash and history extraction")
     sys.stderr.write("\n          This option should be specified before the password hash")
@@ -260,6 +265,7 @@ csvof = None
 reName = None
 only_active = False
 only_locked = False
+uac_flags = None
 
 
 sys.stderr.write("\n[+] Started at: %s" % time.strftime(
@@ -281,11 +287,23 @@ for opt in sys.argv:
         reName = re.compile(name)
         sys.stderr.write("\n\t[-] User name: %s" % name)
     if opt == "--active":
+        if uac_flags != None:
+            sys.stderr.write("\n[!] Error! This option cannot be used with --uac!")
+            sys.exit()
         only_active = True
         sys.stderr.write("\n\t[-] Extracting only active accounts")
     if opt == "--locked":
+        if uac_flags != None:
+            sys.stderr.write("\n[!] Error! This option cannot be used with --uac!")
+            sys.exit()
         only_locked = True
         sys.stderr.write("\n\t[-] Extracting only locked accounts")
+    if opt == "--uac":
+        if len(sys.argv) < optid + 2:
+            usage()
+            sys.exit(1)
+        uac_flags = int(sys.argv[optid + 1], 16)
+        sys.stderr.write("\n\t[-] Extracting only accounts with UAC flags: " + sys.argv[optid + 1])
     if opt == "--sid":
         if len(sys.argv) < optid + 2:
             usage()
@@ -487,6 +505,9 @@ else:
                 processUser(user)
         elif only_locked == True:
             if user.isLocked == True or user.isDisabled == True:
+                processUser(user)
+        elif uac_flags != None:
+            if user.UserAccountControl & uac_flags == uac_flags:
                 processUser(user)
         else:
             processUser(user)
