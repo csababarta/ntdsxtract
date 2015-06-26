@@ -156,7 +156,7 @@ class dsAccount(dsObject):
     
     isLocked = False
     isDisabled = False
-    isActive = True
+    isActive = False
     
     def __init__(self, dsDatabase, dsRecordId):
         '''
