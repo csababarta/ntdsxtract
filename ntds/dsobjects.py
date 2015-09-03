@@ -53,37 +53,36 @@ class dsObject:
         self.DB = dsDatabase
         self.RecordId = dsRecordId
         self.Record = dsGetRecordByRecordId(dsDatabase, self.RecordId)
-        if self.Record == None:
-            raise BaseException
-        self.Name   = self.Record[ntds.dsfielddictionary.dsObjectName2Index]
-        self.TypeId = dsGetRecordType(dsDatabase, self.RecordId)
-        self.Type   = dsGetTypeName(dsDatabase, self.TypeId)
+        if self.Record != None:
+            self.Name   = self.Record[ntds.dsfielddictionary.dsObjectName2Index]
+            self.TypeId = dsGetRecordType(dsDatabase, self.RecordId)
+            self.Type   = dsGetTypeName(dsDatabase, self.TypeId)
 
-        if self.Record[ntds.dsfielddictionary.dsObjectGUIDIndex] != "":
-            self.GUID = GUID(self.Record[ntds.dsfielddictionary.dsObjectGUIDIndex])
+            if self.Record[ntds.dsfielddictionary.dsObjectGUIDIndex] != "":
+                self.GUID = GUID(self.Record[ntds.dsfielddictionary.dsObjectGUIDIndex])
         
-        if self.Record[ntds.dsfielddictionary.dsWhenCreatedIndex] != "":
-            self.WhenCreated = dsConvertToDSTimeStamp(
+            if self.Record[ntds.dsfielddictionary.dsWhenCreatedIndex] != "":
+                self.WhenCreated = dsConvertToDSTimeStamp(
                                 self.Record[ntds.dsfielddictionary.dsWhenCreatedIndex]
                                                       )
-        else:
-            self.WhenCreated = dsConvertToDSTimeStamp(
+            else:
+                self.WhenCreated = dsConvertToDSTimeStamp(
                                 self.Record[ntds.dsfielddictionary.dsRecordTimeIndex]
                                                       )
         
-        if self.Record[ntds.dsfielddictionary.dsWhenChangedIndex] != "":
-            self.WhenChanged = dsConvertToDSTimeStamp(
+            if self.Record[ntds.dsfielddictionary.dsWhenChangedIndex] != "":
+                self.WhenChanged = dsConvertToDSTimeStamp(
                                 self.Record[ntds.dsfielddictionary.dsWhenChangedIndex]
                                                       )
 
-        if self.Record[ntds.dsfielddictionary.dsUSNCreatedIndex] != "":
-            self.USNCreated = int(self.Record[ntds.dsfielddictionary.dsUSNCreatedIndex])
+            if self.Record[ntds.dsfielddictionary.dsUSNCreatedIndex] != "":
+                self.USNCreated = int(self.Record[ntds.dsfielddictionary.dsUSNCreatedIndex])
         
-        if self.Record[ntds.dsfielddictionary.dsUSNChangedIndex] != "":
-            self.USNChanged = int(self.Record[ntds.dsfielddictionary.dsUSNChangedIndex])
+            if self.Record[ntds.dsfielddictionary.dsUSNChangedIndex] != "":
+                self.USNChanged = int(self.Record[ntds.dsfielddictionary.dsUSNChangedIndex])
             
-        if self.Record[ntds.dsfielddictionary.dsIsDeletedIndex] != "":
-            self.IsDeleted = True
+            if self.Record[ntds.dsfielddictionary.dsIsDeletedIndex] != "":
+                self.IsDeleted = True
             
     def getChilds(self):
         '''
