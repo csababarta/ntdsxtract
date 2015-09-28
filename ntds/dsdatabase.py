@@ -242,7 +242,7 @@ def dsBuildMaps(dsDatabase, workdir):
             #===================================================================
             if record[ntds.dsfielddictionary.dsPEKIndex] != "":
                 if ntds.dsfielddictionary.dsEncryptedPEK != "":
-                    sys.sterr.write("\n[!] Warning! Multiple records with PEK entry!\n")
+                    sys.stderr.write("\n[!] Warning! Multiple records with PEK entry!\n")
                 ntds.dsfielddictionary.dsEncryptedPEK = record[ntds.dsfielddictionary.dsPEKIndex]
                 
             try:
