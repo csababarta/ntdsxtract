@@ -363,21 +363,21 @@ for opt in sys.argv:
     optid += 1
 
 if (pwdump or pwhdump) and syshive == "":
-    print("\n[!] Error! syshive not specified!")
+    sys.stderr.write("\n[!] Error! syshive not specified!\n")
     usage()
     sys.exit(1)
     
 if suppcreddump == True and syshive == "":
-    print("\n[!] Error! syshive not specified!")
+    sys.stderr.write("\n[!] Error! syshive not specified!\n")
     usage()
     sys.exit(1)
 
 # Setting up the environment
 if not checkfile(sys.argv[1]):
-    print("\n[!] Error! datatable cannot be found!")
+    sys.stderr.write("\n[!] Error! datatable cannot be found!\n")
     sys.exit(1)
 if not checkfile(sys.argv[2]):
-    print("\n[!] Error! linktable cannot be found!")
+    sys.stderr.write("\n[!] Error! linktable cannot be found!\n")
     sys.exit(1)
 wd = ensure_dir(sys.argv[3])
 

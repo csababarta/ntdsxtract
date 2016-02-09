@@ -230,7 +230,7 @@ for opt in sys.argv:
 
 # Setting up the environment
 if not checkfile(sys.argv[1]):
-    print("\n[!] Error! datatable cannot be found!")
+    sys.stderr.write("\n[!] Error! datatable cannot be found!\n")
     sys.exit(1)
 wd = ensure_dir(sys.argv[2])
 

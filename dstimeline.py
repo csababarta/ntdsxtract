@@ -92,7 +92,7 @@ for opt in sys.argv:
 
 # Check the datatable
 if not checkfile(sys.argv[1]):
-    print("\n[!] Error! datatable cannot be found!")
+    sys.stderr.write("\n[!] Error! datatable cannot be found!\n")
     sys.exit(1)
 
 # Check the workdir
