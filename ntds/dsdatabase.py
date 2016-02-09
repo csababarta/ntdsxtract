@@ -54,7 +54,7 @@ def dsInitDatabase(dsESEFile, workdir):
     line = db.readline()
     if line == "":
         sys.stderr.write("[!] Warning! Error processing the first line!\n")
-        sys.exit()
+        sys.exit(1)
     else:
         dsFieldNameRecord = line.split('\t')
         record = line.split('\t')
@@ -356,7 +356,7 @@ def dsBuildTypeMap(dsDatabase, workdir):
     
     if dsSchemaTypeId == -1:
     	sys.stderr.write("[!] Error! The Schema object's type id cannot be found! The DB is inconsistent!\n")
-    	sys.exit()
+    	sys.exit(1)
     elif len(dsMapRecordIdByTypeId[dsSchemaTypeId]) > 1:
     	sys.stderr.write("[!] Warning! There are more than 1 schema objects! The DB is inconsistent!\n")
     	sys.stderr.write("      Schema record ids: " + str(dsMapRecordIdByTypeId[dsSchemaTypeId]) + "\n")

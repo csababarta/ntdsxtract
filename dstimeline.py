@@ -73,13 +73,13 @@ for opt in sys.argv:
     if opt == "--b":
         if csvformat == True:
             sys.stderr.write("\n[!] Error! CSV and body format cannot be defined at the same time!\n")
-            sys.exit()
+            sys.exit(1)
         bodyformat = True
         sys.stderr.write("\n\t[-] Using mactime body format")
     if opt == "--csv":
         if bodyformat == True:
             sys.stderr.write("\n[!] Error! CSV and body format cannot be defined at the same time!\n")
-            sys.exit()
+            sys.exit(1)
         csvformat = True
         sys.stderr.write("\n\t[-] Using CSV format")
     if opt == "--outfile":
@@ -93,7 +93,7 @@ for opt in sys.argv:
 # Check the datatable
 if not checkfile(sys.argv[1]):
     print("\n[!] Error! datatable cannot be found!")
-    sys.exit()
+    sys.exit(1)
 
 # Check the workdir
 wd = ensure_dir(sys.argv[2])

@@ -289,13 +289,13 @@ for opt in sys.argv:
     if opt == "--active":
         if uac_flags != None:
             sys.stderr.write("\n[!] Error! This option cannot be used with --uac!")
-            sys.exit()
+            sys.exit(1)
         only_active = True
         sys.stderr.write("\n\t[-] Extracting only active accounts")
     if opt == "--locked":
         if uac_flags != None:
             sys.stderr.write("\n[!] Error! This option cannot be used with --uac!")
-            sys.exit()
+            sys.exit(1)
         only_locked = True
         sys.stderr.write("\n\t[-] Extracting only locked accounts")
     if opt == "--uac":
@@ -375,10 +375,10 @@ if suppcreddump == True and syshive == "":
 # Setting up the environment
 if not checkfile(sys.argv[1]):
     print("\n[!] Error! datatable cannot be found!")
-    sys.exit()
+    sys.exit(1)
 if not checkfile(sys.argv[2]):
     print("\n[!] Error! linktable cannot be found!")
-    sys.exit()
+    sys.exit(1)
 wd = ensure_dir(sys.argv[3])
 
 if pwdump == True or pwhdump == True:
@@ -414,13 +414,13 @@ utype = -1
 utype = dsGetTypeIdByTypeName(db, "Person")
 if utype == -1:
     sys.stderr.write("\n[!] Unable to get type id for Person")
-    sys.exit()
+    sys.exit(1)
 
 gtype = -1
 gtype = dsGetTypeIdByTypeName(db, "Group")
 if gtype == -1:
     sys.stderr.write("\n[!] Unable to get type id for Group")
-    sys.exit()
+    sys.exit(1)
 
 groups = []
 if grpdump == True:
@@ -452,7 +452,7 @@ if sid != "":
             raise KeyboardInterrupt
         except:
             sys.stderr.write("\n[!] Unable to instantiate user object (record id: %d)" % recordid)
-            sys.exit()
+            sys.exit(1)
         
         if only_active == True:
             if user.isActive == True:
@@ -472,7 +472,7 @@ elif guid !="":
             raise KeyboardInterrupt
         except:
             sys.stderr.write("\n[!] Unable to instantiate user object (record id: %d)" % recordid)
-            sys.exit()
+            sys.exit(1)
         
         if only_active == True:
             if user.isActive == True:

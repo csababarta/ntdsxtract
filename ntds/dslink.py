@@ -34,7 +34,7 @@ def dsInitLinks(dsESEFile, workdir):
     line = dl.readline()
     if line == "":
         sys.stderr.write("[-] Warning! Error processing the first line!\n")
-        sys.exit()
+        sys.exit(1)
     else:
         ntds.dsfielddictionary.dsFieldNameRecord = line.split('\t')
         record = line.split('\t')

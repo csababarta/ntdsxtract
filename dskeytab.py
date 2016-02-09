@@ -42,10 +42,10 @@ if len(sys.argv) < 6:
 # Setting up the environment
 if not checkfile(sys.argv[1]):
     print("\n[!] Error! datatable cannot be found!")
-    sys.exit()
+    sys.exit(1)
 if not checkfile(sys.argv[2]):
     print("\n[!] Error! linktable cannot be found!")
-    sys.exit()
+    sys.exit(1)
 wd = ensure_dir(sys.argv[4])
 
 # Initializing engine
@@ -232,13 +232,13 @@ utype = -1
 utype = dsGetTypeIdByTypeName(db, "Person")
 if utype == -1:
     print "Unable to get type id for Person"
-    sys.exit()
+    sys.exit(1)
 
 ctype = -1
 ctype = dsGetTypeIdByTypeName(db, "Computer")
 if ctype == -1:
     print "Unable to get type id for Computer"
-    sys.exit()
+    sys.exit(1)
 
 defaultRealm = dsGetMachineDomain()
 if defaultRealm == None:

@@ -68,7 +68,7 @@ for opt in sys.argv:
 
 if not checkfile(sys.argv[1]):
     print("\n[!] Error! datatable cannot be found!")
-    sys.exit()
+    sys.exit(1)
 wd = ensure_dir(sys.argv[2])
 
 sys.stderr.write("\n[+] Started at: %s" % time.strftime(
