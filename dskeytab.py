@@ -33,6 +33,9 @@ def usage():
     sys.stderr.write("\nDSKeytab v" + str(ntds.version.version))
     sys.stderr.write("\nGenerate keytab file")
     sys.stderr.write("\n\nusage: {0} <datatable> <linktable> <system hive> <work directory> <keytab>".format(sys.argv[0]))
+    sys.stderr.write("\n\n  options:")
+    sys.stderr.write("\n    --debug")
+    sys.stderr.write("\n          Turn on detailed error messages and stack trace")
     sys.stderr.write("\n")
 
 if len(sys.argv) < 6:

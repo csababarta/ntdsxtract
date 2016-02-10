@@ -89,7 +89,7 @@ def usage():
     sys.stderr.write("\n    --csvoutfile <name of the CSV output file>")
     sys.stderr.write("\n          The filename of the csv file to which ntdsxtract should write the")
     sys.stderr.write("\n          output")
-    sys.stderr.write("\n    --debug <name of the CSV output file>")
+    sys.stderr.write("\n    --debug")
     sys.stderr.write("\n          Turn on detailed error messages and stack trace")
     sys.stderr.write("\n")
     

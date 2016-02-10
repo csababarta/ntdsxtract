@@ -32,6 +32,9 @@ if len(sys.argv) < 2:
     sys.stderr.write("\nDSFileInformation v" + str(ntds.version.version))
     sys.stderr.write("\nExtracts information related to the NTDS.DIT database file")
     sys.stderr.write("\n\nusage: %s <ntds.dit>\n" % sys.argv[0])
+    sys.stderr.write("\n\n  options:")
+    sys.stderr.write("\n    --debug")
+    sys.stderr.write("\n          Turn on detailed error messages and stack trace")
     sys.exit(1)
 
 sys.stderr.write("\n[+] Started at: %s" % time.strftime(

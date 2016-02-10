@@ -51,6 +51,8 @@ def usage():
     sys.stderr.write("\n    --outfile <name of the output file>")
     sys.stderr.write("\n          The filename of the output file to which ntdsxtract should write the")
     sys.stderr.write("\n          output")
+    sys.stderr.write("\n    --debug")
+    sys.stderr.write("\n       Turn on detailed error messages and stack trace")
     sys.stderr.write("\n\nFields of the default output")
     sys.stderr.write("\n    Timestamp|Action|Record ID|Obj. name|Obj. type")
     sys.stderr.write("\n")
