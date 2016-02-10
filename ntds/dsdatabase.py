@@ -258,14 +258,14 @@ def dsBuildMaps(dsDatabase, workdir):
                     if dsSchemaTypeId == -1 and record[ntds.dsfielddictionary.dsObjectTypeIdIndex] != "":
                         dsSchemaTypeId = int(record[ntds.dsfielddictionary.dsObjectTypeIdIndex])
                     else:
-                        sys.stderr.write("\n[!] Warning! There is more than one Schema object! The DB is inconsisten!\n")
+                        sys.stderr.write("\n[!] Warning! There is more than one Schema object! The DB is inconsistent!\n")
             except:
                 dsMapRecordIdByName[record[ntds.dsfielddictionary.dsObjectName2Index]] = int(record[ntds.dsfielddictionary.dsRecordIdIndex])
                 if record[ntds.dsfielddictionary.dsObjectName2Index] == "Schema":
                     if dsSchemaTypeId == -1 and record[ntds.dsfielddictionary.dsObjectTypeIdIndex] != "":
                         dsSchemaTypeId = int(record[ntds.dsfielddictionary.dsObjectTypeIdIndex])
                     else:
-                        sys.stderr.write("\n[!] Warning! There is more than one Schema object! The DB is inconsisten!\n")
+                        sys.stderr.write("\n[!] Warning! There is more than one Schema object! The DB is inconsistent!\n")
                 pass
             
             try:
