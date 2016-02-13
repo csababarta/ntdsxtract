@@ -177,8 +177,8 @@ class dsAccount(dsObject):
                 self.isLocked = True
             if self.UserAccountControl & int("0x2", 16) == int("0x2", 16):
                 self.isDisabled = True
-            if not self.isLocked and not self.isDisabled:
-                self.isActive = True
+            if self.isLocked or self.isDisabled:
+                self.isActive = False
         
         if self.Record[ntds.dsfielddictionary.dsPrimaryGroupIdIndex] != "":
             self.PrimaryGroupID = int(self.Record[ntds.dsfielddictionary.dsPrimaryGroupIdIndex])
