@@ -47,6 +47,8 @@ if len(sys.argv) < 3 or len(sys.argv) > 6:
     sys.stderr.write("\n        written to this file")
     sys.stderr.write("\n    --useIsDeleted")
     sys.stderr.write("\n        Extract deleted objects based on the IsDeleted flag")
+    sys.stderr.write("\n    --debug")
+    sys.stderr.write("\n        Turn on detailed error messages and stack trace")
     sys.stderr.write("\n\nFields of the main output")
     sys.stderr.write("\n    Rec. ID|Cr. time|Mod. time|Obj. name|Orig. container name\n")
     sys.stderr.flush()
@@ -67,8 +69,8 @@ for opt in sys.argv:
     optid += 1
 
 if not checkfile(sys.argv[1]):
-    print("\n[!] Error! datatable cannot be found!")
-    sys.exit()
+    sys.stderr.write("\n[!] Error! datatable cannot be found!\n")
+    sys.exit(1)
 wd = ensure_dir(sys.argv[2])
 
 sys.stderr.write("\n[+] Started at: %s" % time.strftime(

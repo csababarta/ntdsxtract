@@ -51,6 +51,8 @@ def usage():
     sys.stderr.write("\n    --outfile <name of the output file>")
     sys.stderr.write("\n          The filename of the output file to which ntdsxtract should write the")
     sys.stderr.write("\n          output")
+    sys.stderr.write("\n    --debug")
+    sys.stderr.write("\n       Turn on detailed error messages and stack trace")
     sys.stderr.write("\n\nFields of the default output")
     sys.stderr.write("\n    Timestamp|Action|Record ID|Obj. name|Obj. type")
     sys.stderr.write("\n")
@@ -73,13 +75,13 @@ for opt in sys.argv:
     if opt == "--b":
         if csvformat == True:
             sys.stderr.write("\n[!] Error! CSV and body format cannot be defined at the same time!\n")
-            sys.exit()
+            sys.exit(1)
         bodyformat = True
         sys.stderr.write("\n\t[-] Using mactime body format")
     if opt == "--csv":
         if bodyformat == True:
             sys.stderr.write("\n[!] Error! CSV and body format cannot be defined at the same time!\n")
-            sys.exit()
+            sys.exit(1)
         csvformat = True
         sys.stderr.write("\n\t[-] Using CSV format")
     if opt == "--outfile":
@@ -92,8 +94,8 @@ for opt in sys.argv:
 
 # Check the datatable
 if not checkfile(sys.argv[1]):
-    print("\n[!] Error! datatable cannot be found!")
-    sys.exit()
+    sys.stderr.write("\n[!] Error! datatable cannot be found!\n")
+    sys.exit(1)
 
 # Check the workdir
 wd = ensure_dir(sys.argv[2])

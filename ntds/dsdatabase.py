@@ -54,7 +54,7 @@ def dsInitDatabase(dsESEFile, workdir):
     line = db.readline()
     if line == "":
         sys.stderr.write("[!] Warning! Error processing the first line!\n")
-        sys.exit()
+        sys.exit(1)
     else:
         dsFieldNameRecord = line.split('\t')
         record = line.split('\t')
@@ -258,14 +258,14 @@ def dsBuildMaps(dsDatabase, workdir):
                     if dsSchemaTypeId == -1 and record[ntds.dsfielddictionary.dsObjectTypeIdIndex] != "":
                         dsSchemaTypeId = int(record[ntds.dsfielddictionary.dsObjectTypeIdIndex])
                     else:
-                        sys.stderr.write("\n[!] Warning! There is more than one Schema object! The DB is inconsisten!\n")
+                        sys.stderr.write("\n[!] Warning! There is more than one Schema object! The DB is inconsistent!\n")
             except:
                 dsMapRecordIdByName[record[ntds.dsfielddictionary.dsObjectName2Index]] = int(record[ntds.dsfielddictionary.dsRecordIdIndex])
                 if record[ntds.dsfielddictionary.dsObjectName2Index] == "Schema":
                     if dsSchemaTypeId == -1 and record[ntds.dsfielddictionary.dsObjectTypeIdIndex] != "":
                         dsSchemaTypeId = int(record[ntds.dsfielddictionary.dsObjectTypeIdIndex])
                     else:
-                        sys.stderr.write("\n[!] Warning! There is more than one Schema object! The DB is inconsisten!\n")
+                        sys.stderr.write("\n[!] Warning! There is more than one Schema object! The DB is inconsistent!\n")
                 pass
             
             try:
@@ -356,7 +356,7 @@ def dsBuildTypeMap(dsDatabase, workdir):
     
     if dsSchemaTypeId == -1:
     	sys.stderr.write("[!] Error! The Schema object's type id cannot be found! The DB is inconsistent!\n")
-    	sys.exit()
+    	sys.exit(1)
     elif len(dsMapRecordIdByTypeId[dsSchemaTypeId]) > 1:
     	sys.stderr.write("[!] Warning! There are more than 1 schema objects! The DB is inconsistent!\n")
     	sys.stderr.write("      Schema record ids: " + str(dsMapRecordIdByTypeId[dsSchemaTypeId]) + "\n")

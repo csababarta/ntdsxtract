@@ -64,6 +64,8 @@ def usage():
     sys.stderr.write("\n    --csvoutfile <name of the CSV output file>")
     sys.stderr.write("\n          The filename of the csv file to which ntdsxtract should write the")
     sys.stderr.write("\n          output")
+    sys.stderr.write("\n    --debug")
+    sys.stderr.write("\n          Turn on detailed error messages and stack trace")
     sys.stderr.write("\n")
     sys.stderr.flush()
 
@@ -230,8 +232,8 @@ for opt in sys.argv:
 
 # Setting up the environment
 if not checkfile(sys.argv[1]):
-    print("\n[!] Error! datatable cannot be found!")
-    sys.exit()
+    sys.stderr.write("\n[!] Error! datatable cannot be found!\n")
+    sys.exit(1)
 wd = ensure_dir(sys.argv[2])
 
 if pwdump or pwhdump or suppcreddump:
