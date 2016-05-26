@@ -28,7 +28,7 @@ from ntds.dslink import *
 from ntds.dstime import *
 from ntds.lib.fs import *
 from ntds.lib.csvoutput import *
-
+import re
 
 def usage():
     sys.stderr.write("\nDSGroups v" + str(ntds.version.version))
@@ -46,7 +46,7 @@ def usage():
     sys.stderr.write("\n    --rid <group rid>")
     sys.stderr.write("\n          Extracts only the group identified by <group id>")
     sys.stderr.write("\n    --name <group name regexp>")
-    sys.stderr.write("\n          Extracts only the group identified by the refular expression")
+    sys.stderr.write("\n          Extracts only the group identified by the regular expression")
     sys.stderr.write("\n    --members")
     sys.stderr.write("\n          Extracts the members of the group")
     sys.stderr.write("\n    --csvoutfile <name of the CSV output file>")
@@ -136,7 +136,7 @@ if grpdump == True:
         
 if csvoutfile != "":
     write_csv(["Record ID", "Group name", "GUID", "SID", "When created",
-               "When changed", "Member object", "Member object GUID",
+               "When changed", "Member object","Member SAMAccountName", "Member object GUID",
                "Member object type", "Primary group of member",
                "Membership deletion time"
             ])
@@ -180,14 +180,14 @@ for recordid in dsMapLineIdByRecordId:
                             write_csv([group.RecordId, group.Name, str(group.GUID),
                                     str(group.SID), "=\"" + dsGetDSTimeStampStr(group.WhenCreated) + "\"",
                                     "=\"" + dsGetDSTimeStampStr(group.WhenChanged) + "\"",
-                                    u.Name, str(u.GUID), u.Type, "Y", ""
+                                    u.Name, u.SAMAccountName, str(u.GUID), u.Type, "Y", ""
                                     ])
                         sys.stdout.write("\n\t%s (%s) (%s) (P)" % (u.Name, str(u.GUID), u.Type))
             memberlist = group.getMembers()
             for memberdata in memberlist:
                 (memberid, deltime) = memberdata
                 try:
-                    member = dsObject(db, memberid)
+                    member = dsAccount(db, memberid)
                 except:
                     continue
                 if member == None:
@@ -197,7 +197,7 @@ for recordid in dsMapLineIdByRecordId:
                         write_csv([group.RecordId, group.Name, str(group.GUID),
                             str(group.SID), "=\"" + dsGetDSTimeStampStr(group.WhenCreated) + "\"",
                             "=\"" + dsGetDSTimeStampStr(group.WhenChanged) + "\"",
-                            member.Name, str(member.GUID), member.Type, "N", ""
+                            member.Name, member.SAMAccountName, str(member.GUID), member.Type, "N", ""
                             ])
                     sys.stdout.write("\n\t%s (%s) (%s)" % (member.Name, str(member.GUID), member.Type))
                 else:
@@ -205,7 +205,7 @@ for recordid in dsMapLineIdByRecordId:
                         write_csv([group.RecordId, group.Name, str(group.GUID),
                             str(group.SID), "=\"" + dsGetDSTimeStampStr(group.WhenCreated) + "\"",
                             "=\"" + dsGetDSTimeStampStr(group.WhenChanged) + "\"",
-                            member.Name, str(member.GUID), member.Type, "N", "=\"" + dsGetDSTimeStampStr(dsConvertToDSTimeStamp(deltime)) + "\""
+                            member.Name, member.SAMAccountName, str(member.GUID), member.Type, "N", "=\"" + dsGetDSTimeStampStr(dsConvertToDSTimeStamp(deltime)) + "\""
                             ])
                     sys.stdout.write("\n\t%s (%s) (%s) - Deleted: %s" % (member.Name, 
                                                                          str(member.GUID), 
