@@ -28,7 +28,7 @@ from ntds.dslink import *
 from ntds.dstime import *
 from ntds.lib.fs import *
 from ntds.lib.csvoutput import *
-
+import re
 
 def usage():
     sys.stderr.write("\nDSGroups v" + str(ntds.version.version))
@@ -46,7 +46,7 @@ def usage():
     sys.stderr.write("\n    --rid <group rid>")
     sys.stderr.write("\n          Extracts only the group identified by <group id>")
     sys.stderr.write("\n    --name <group name regexp>")
-    sys.stderr.write("\n          Extracts only the group identified by the refular expression")
+    sys.stderr.write("\n          Extracts only the group identified by the regular expression")
     sys.stderr.write("\n    --members")
     sys.stderr.write("\n          Extracts the members of the group")
     sys.stderr.write("\n    --csvoutfile <name of the CSV output file>")
