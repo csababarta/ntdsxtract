@@ -230,7 +230,8 @@ def dsBuildMaps(dsDatabase, workdir):
         except:
             sys.stderr.write("\n[!] Warning! Error at dsMapOffsetByLineId!\n")
             pass
-        line = dsDatabase.readline()
+        # read the line and strip both DOS and UNIX newlines from it to prevent non-empty strings for rightmost column
+        line = dsDatabase.readline().rstrip('\n').rstrip('\r')
         if line == "":
             break
         record = line.split('\t')
