@@ -39,7 +39,7 @@ class SID:
             return None
         (self.Revision, ) = unpack('B', unhexlify(strSID[:2]))
         (self.SecurityAuthority, ) = unpack('>I', unhexlify(strSID[8:16]))
-        self.NumIDS = (len(strSID) / 8) - 2
+        self.NumIDS = (len(strSID) // 8) - 2
         (self.RID, ) = unpack('>I',unhexlify(strSID[len(strSID) - 8:]))
         
         self.IDs = []
@@ -56,4 +56,4 @@ class SID:
         strSID += '-' + str(self.RID)
         
         return strSID
-    
+

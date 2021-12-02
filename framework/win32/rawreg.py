@@ -23,9 +23,9 @@ from framework.newobj import Obj,Pointer
 from struct import unpack
 
 ROOT_INDEX = 0x20
-LH_SIG = unpack("<H","lh")[0]
-LF_SIG = unpack("<H","lf")[0]
-RI_SIG = unpack("<H","ri")[0]
+LH_SIG = unpack("<H",b"lh")[0]
+LF_SIG = unpack("<H",b"lf")[0]
+RI_SIG = unpack("<H",b"ri")[0]
 
 def get_root(address_space):
     return Obj("_CM_KEY_NODE", ROOT_INDEX, address_space)
@@ -38,7 +38,7 @@ def open_key(root, key):
     for s in subkeys(root):
         if s.Name.upper() == keyname.upper():
             return open_key(s, key)
-    print "ERR: Couldn't find subkey %s of %s" % (keyname, root.Name)
+    print("ERR: Couldn't find subkey %s of %s" % (keyname, root.Name))
     return None
 
 def subkeys(key,stable=True):

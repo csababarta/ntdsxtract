@@ -21,7 +21,7 @@
 import ntds.dsfielddictionary
 from ntds.dstime import *
 import sys
-from lib.map import *
+from .lib.map import *
 import pickle
 from os import path
 
@@ -29,7 +29,7 @@ dsMapLinks         = {}
 dsMapBackwardLinks = {}
 
 def dsInitLinks(dsESEFile, workdir):
-    dl = open(dsESEFile , 'rb', 0)
+    dl = open(dsESEFile, 'r')
     dl.seek(0)
     line = dl.readline()
     if line == "":
