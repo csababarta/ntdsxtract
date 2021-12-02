@@ -72,13 +72,13 @@ def dsGetDSDateTime(dsTimeStamp):
     if dsVerifyDSTimeStamp(dsTimeStamp) == -1:
         return "Never"
     else:
-        return _FILETIME_null_date + datetime.timedelta(microseconds=int(dsTimeStamp) / 10)
+        return _FILETIME_null_date + datetime.timedelta(microseconds=int(dsTimeStamp) // 10)
 
 def dsGetDSTimeStampStr(dsTimeStamp):
     if dsVerifyDSTimeStamp(dsTimeStamp) == -1:
         return "Never"
     else:
-        return str(_FILETIME_null_date + datetime.timedelta(microseconds=int(dsTimeStamp) / 10))
+        return str(_FILETIME_null_date + datetime.timedelta(microseconds=int(dsTimeStamp) // 10))
 
 def dsGetPOSIXTimeStamp(dsTimeStamp):
     ts = 0

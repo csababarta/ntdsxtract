@@ -42,7 +42,7 @@ def ensure_dir(path):
         try:
             sys.stderr.write("\nThe directory (" + normalizepath(path) + ") specified does not exists!")
             sys.stderr.write("\nWould you like to create it? [Y/N] ")
-            tmp = raw_input()
+            tmp = input()
             #sys.stderr.write("\n%s" % tmp)
             if tmp.capitalize() == "Y":
                 os.makedirs(normalizepath(path))

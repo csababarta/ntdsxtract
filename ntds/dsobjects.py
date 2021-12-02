@@ -101,7 +101,7 @@ class dsObject:
         ancestorlist = []
         ancestorvalue = self.Record[ntds.dsfielddictionary.dsAncestorsIndex] 
         if ancestorvalue != "":
-            l = len(ancestorvalue) / 8
+            l = len(ancestorvalue) // 8
             for aid in range(0, l):
                 (ancestorid,) = unpack('I', unhexlify(ancestorvalue[aid * 8:aid * 8 + 8]))
                 ancestor = dsObject(dsDatabase, ancestorid)
