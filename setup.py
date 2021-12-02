@@ -21,6 +21,7 @@ setup(name = PACKAGE_NAME,
       packages = ['framework', 'framework.win32', 'ntds', 'ntds.lib'],
       scripts = ['dscomputers.py', 'dsdeletedobjects.py', 'dsfileinformation.py', 'dsgroups.py', 'dskeytab.py', 'dstimeline.py', 'dsusers.py'],
       data_files = [(os.path.join('share', 'doc', PACKAGE_NAME), ['README.md', 'LICENSE', 'release_notes.txt'])],
+      install_requires=['pycrypto'],
       requires=['libesedb'],
       )
 
