@@ -35,11 +35,11 @@ import struct
 class FileAddressSpace:
     def __init__(self, fname, mode='rb', fast=False):
         self.fname = fname
-	self.name = fname
-	self.fhandle = open(fname, mode)
+        self.name = fname
+        self.fhandle = open(fname, mode)
         self.fsize = os.path.getsize(fname)
 
-	if fast == True:
+        if fast == True:
             self.fast_fhandle = open(fname, mode)
 
     def fread(self,len):

@@ -54,8 +54,8 @@ anum = "0123456789012345678901234567890123456789\0"
 antpassword = "NTPASSWORD\0"
 almpassword = "LMPASSWORD\0"
 
-empty_lm = "aad3b435b51404eeaad3b435b51404ee".decode('hex')
-empty_nt = "31d6cfe0d16ae931b73c59d7e0c089c0".decode('hex')
+empty_lm = bytes.fromhex("aad3b435b51404eeaad3b435b51404ee")
+empty_nt = bytes.fromhex("31d6cfe0d16ae931b73c59d7e0c089c0")
 
 def str_to_key(s):
     key = []
@@ -235,8 +235,8 @@ def dump_hashes(sysaddr, samaddr):
         lmhash,nthash = get_user_hashes(user,hbootkey)
         if not lmhash: lmhash = empty_lm
         if not nthash: nthash = empty_nt
-        print "%s:%d:%s:%s:::" % (get_user_name(user), int(user.Name,16),
-                            lmhash.encode('hex'), nthash.encode('hex'))
+        print("%s:%d:%s:%s:::" % (get_user_name(user), int(user.Name,16),
+                            lmhash.encode('hex'), nthash.encode('hex')))
 
 def dump_file_hashes(syshive_fname, samhive_fname):
     sysaddr = HiveFileAddressSpace(syshive_fname)

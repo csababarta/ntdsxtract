@@ -21,7 +21,7 @@
 import ntds.dsfielddictionary
 from ntds.dstime import *
 import sys
-from lib.map import *
+from .lib.map import *
 import pickle
 from os import path
 

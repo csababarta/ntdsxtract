@@ -24,12 +24,12 @@ import calendar
 from struct import *
 
 class dsUTC(datetime.tzinfo):
-	def utcoffset(self, dt):
-		return datetime.timedelta(hours=0)
-	def dst(self, dt):
-		return datetime.timedelta(0)
-	def tzname(self,dt):
-		return "UTC"
+    def utcoffset(self, dt):
+        return datetime.timedelta(hours=0)
+    def dst(self, dt):
+        return datetime.timedelta(0)
+    def tzname(self,dt):
+        return "UTC"
 
 tzinfoUTC=dsUTC()
 _FILETIME_null_date = datetime.datetime(1601, 1, 1, 0, 0, 0, tzinfo=tzinfoUTC)

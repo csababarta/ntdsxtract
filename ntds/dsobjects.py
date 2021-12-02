@@ -477,19 +477,19 @@ class dsKerberosNewKeys:
         self.OlderCredentials = []
         
     def Print(self, indent=""):
-        print "{0}salt: {1}".format(indent, self.DefaultSalt)
+        print("{0}salt: {1}".format(indent, self.DefaultSalt))
         if len(self.Credentials) > 0:
-            print "{0}Credentials".format(indent)
+            print("{0}Credentials".format(indent))
             for key in self.Credentials:
-                print "{0}  {1} {2}".format(indent, key.KeyType, hexlify(key.Key))
+                print("{0}  {1} {2}".format(indent, key.KeyType, hexlify(key.Key)))
         if len(self.OldCredentials) > 0:
-            print "{0}OldCredentials".format(indent)
+            print("{0}OldCredentials".format(indent))
             for key in self.OldCredentials:
-                print "{0}  {1} {2}".format(indent, key.KeyType, hexlify(key.Key))
+                print("{0}  {1} {2}".format(indent, key.KeyType, hexlify(key.Key)))
         if len(self.OlderCredentials) > 0:
-            print "{0}OlderCredentials".format(indent)
+            print("{0}OlderCredentials".format(indent))
             for key in self.OlderCredentials:
-                print "{0}  {1} {2}".format(indent, key.KeyType, hexlify(key.Key))
+                print("{0}  {1} {2}".format(indent, key.KeyType, hexlify(key.Key)))
 
 class dsSupplCredentials:
     '''
@@ -507,23 +507,23 @@ class dsSupplCredentials:
     
     def Print(self, indent=""):
         if self.KerberosNewerKeys != None:
-            print "{0}Kerberos newer keys".format(indent)
+            print("{0}Kerberos newer keys".format(indent))
             self.KerberosNewerKeys.Print(indent + "  ")
         if self.KerberosKeys != None:
-            print "{0}Kerberos keys".format(indent)
+            print("{0}Kerberos keys".format(indent))
             self.KerberosKeys.Print(indent + "  ")
         if self.WDigestHashes != None:
-            print "{0}WDigest hashes".format(indent)
+            print("{0}WDigest hashes".format(indent))
             for h in self.WDigestHashes:
-                print "{0}  {1}".format(indent, hexlify(h))
+                print("{0}  {1}".format(indent, hexlify(h)))
         if self.Packages != None:
-            print "{0}Packages".format(indent)
+            print("{0}Packages".format(indent))
             for p in self.Packages:
-                print "{0}  {1}".format(indent, p)
+                print("{0}  {1}".format(indent, p))
         if self.Password != None:
-            print "{0}Password: {1}".format(indent, self.Password)
-        print "Debug: "
-        print dump(self.Text,16,16)
+            print("{0}Password: {1}".format(indent, self.Password))
+        print("Debug: ")
+        print(dump(self.Text,16,16))
     
     def ParseUserProperties(self, text):
         offset = 0
@@ -613,7 +613,7 @@ class dsSupplCredentials:
             except:
                 self.Password = dump(unhexlify(text[offset:offset+ValueLength]),16,16)
         else:
-            print Name
+            print(Name)
         return offset + ValueLength
 
     def ParseWDigestPropertyValue(self, text):
