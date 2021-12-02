@@ -50,12 +50,12 @@ header = f.read(8192)
 (wbuildnumber, )  = unpack('I', header[224:228])
 (wservicepack, )  = unpack('I', header[228:232])
 
-print("Header checksum:     %s" % hexlify(header[:4][::-1]))
-print("Signature:           %s" % hexlify(header[4:8][::-1]))
-print("File format version: %s" % hexlify(header[8:12][::-1]))
-print("File type:           %s" % hexlify(header[12:16][::-1]))
+print("Header checksum:     %s" % header[:4][::-1].hex())
+print("Signature:           %s" % header[4:8][::-1].hex())
+print("File format version: %s" % header[8:12][::-1].hex())
+print("File type:           %s" % header[12:16][::-1].hex())
 print("Page size:           %d bytes" % pagesize)
-print("DB time:             %s" % hexlify(header[16:24][::-1]))
+print("DB time:             %s" % header[16:24][::-1].hex())
 print("Windows version:     %d.%d (%d) Service pack %d" % (
                                                        wmajorversion,
                                                        wminorversion,

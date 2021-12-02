@@ -213,12 +213,12 @@ class dsAccount(dsObject):
         encnthash = unhexlify(self.Record[ntds.dsfielddictionary.dsNTHashIndex][16:])
         if enclmhash != '':
             lmhash = dsDecryptWithPEK(ntds.dsfielddictionary.dsPEK, enclmhash)
-            lmhash = hexlify(dsDecryptSingleHash(self.SID.RID, lmhash))
+            lmhash = dsDecryptSingleHash(self.SID.RID, lmhash).hex()
             if lmhash == '':
                 lmhash = "NO PASSWORD"
         if encnthash != '':
             nthash = dsDecryptWithPEK(ntds.dsfielddictionary.dsPEK, encnthash)
-            nthash = hexlify(dsDecryptSingleHash(self.SID.RID, nthash))
+            nthash = dsDecryptSingleHash(self.SID.RID, nthash).hex()
             if nthash == '':
                 nthash = "NO PASSWORD"
         return (lmhash, nthash)
@@ -236,14 +236,14 @@ class dsAccount(dsObject):
                 if lmhash == '':
                     lmhistory.append('NO PASSWORD')
                 else:
-                    lmhistory.append(hexlify(lmhash))
+                    lmhistory.append(lmhash.hex())
         if snthistory != "":
             for hindex in range(0,len(snthistory)/16):
                 nthash = dsDecryptSingleHash(self.SID.RID, snthistory[hindex*16:(hindex+1)*16])
                 if nthash == '':
                     nthistory.append('NO PASSWORD')
                 else:
-                    nthistory.append(hexlify(nthash))
+                    nthistory.append(nthash.hex())
         return (lmhistory, nthistory)
     
     def getSupplementalCredentials(self):
@@ -481,15 +481,15 @@ class dsKerberosNewKeys:
         if len(self.Credentials) > 0:
             print("{0}Credentials".format(indent))
             for key in self.Credentials:
-                print("{0}  {1} {2}".format(indent, key.KeyType, hexlify(key.Key)))
+                print("{0}  {1} {2}".format(indent, key.KeyType, key.Key.hex()))
         if len(self.OldCredentials) > 0:
             print("{0}OldCredentials".format(indent))
             for key in self.OldCredentials:
-                print("{0}  {1} {2}".format(indent, key.KeyType, hexlify(key.Key)))
+                print("{0}  {1} {2}".format(indent, key.KeyType, key.Key.hex()))
         if len(self.OlderCredentials) > 0:
             print("{0}OlderCredentials".format(indent))
             for key in self.OlderCredentials:
-                print("{0}  {1} {2}".format(indent, key.KeyType, hexlify(key.Key)))
+                print("{0}  {1} {2}".format(indent, key.KeyType, key.Key.hex()))
 
 class dsSupplCredentials:
     '''
@@ -515,7 +515,7 @@ class dsSupplCredentials:
         if self.WDigestHashes != None:
             print("{0}WDigest hashes".format(indent))
             for h in self.WDigestHashes:
-                print("{0}  {1}".format(indent, hexlify(h)))
+                print("{0}  {1}".format(indent, h.hex()))
         if self.Packages != None:
             print("{0}Packages".format(indent))
             for p in self.Packages:
