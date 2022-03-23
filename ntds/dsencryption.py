@@ -64,5 +64,5 @@ def dsDecryptSingleHash(rid, enc_hash):
     (des_k1,des_k2) = sid_to_key(rid)
     d1 = DES.new(des_k1, DES.MODE_ECB)
     d2 = DES.new(des_k2, DES.MODE_ECB)
-    hash = d1.decrypt(enc_hash[:8]) + d2.decrypt(enc_hash[8:])
-    return hash
+    hash = d1.decrypt(enc_hash[:8]) + d2.decrypt(enc_hash[8:16])
+    return hash[:16]
