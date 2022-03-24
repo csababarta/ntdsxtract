@@ -50,26 +50,26 @@ header = f.read(8192)
 (wbuildnumber, )  = unpack('I', header[224:228])
 (wservicepack, )  = unpack('I', header[228:232])
 
-print "Header checksum:     %s" % hexlify(header[:4][::-1])
-print "Signature:           %s" % hexlify(header[4:8][::-1])
-print "File format version: %s" % hexlify(header[8:12][::-1])
-print "File type:           %s" % hexlify(header[12:16][::-1])
-print "Page size:           %d bytes" % pagesize
-print "DB time:             %s" % hexlify(header[16:24][::-1])
-print "Windows version:     %d.%d (%d) Service pack %d" % (
+print("Header checksum:     %s" % hexlify(header[:4][::-1]))
+print("Signature:           %s" % hexlify(header[4:8][::-1]))
+print("File format version: %s" % hexlify(header[8:12][::-1]))
+print("File type:           %s" % hexlify(header[12:16][::-1]))
+print("Page size:           %d bytes" % pagesize)
+print("DB time:             %s" % hexlify(header[16:24][::-1]))
+print("Windows version:     %d.%d (%d) Service pack %d" % (
                                                        wmajorversion,
                                                        wminorversion,
                                                        wbuildnumber,
                                                        wservicepack
-                                                       )
-print "Creation time: %04d.%02d.%02d %02d:%02d:%02d" % dsGetDBLogTimeStampStr(header[24:52][4:12])
-print "Attach time:   %04d.%02d.%02d %02d:%02d:%02d" % dsGetDBLogTimeStampStr(header[72:80])
+                                                       ))
+print("Creation time: %04d.%02d.%02d %02d:%02d:%02d" % dsGetDBLogTimeStampStr(header[24:52][4:12]))
+print("Attach time:   %04d.%02d.%02d %02d:%02d:%02d" % dsGetDBLogTimeStampStr(header[72:80]))
 if unpack("B", header[88:96][:1]) == (0, ):
-    print "Detach time:   database is in dirty state"
+    print("Detach time:   database is in dirty state")
 else:
-    print "Detach time:   %04d.%02d.%02d %02d:%02d:%02d" % dsGetDBLogTimeStampStr(header[88:96])
-print "Consistent time: %04d.%02d.%02d %02d:%02d:%02d" % dsGetDBLogTimeStampStr(header[64:72])
-print "Recovery time:   %04d.%02d.%02d %02d:%02d:%02d" % dsGetDBLogTimeStampStr(header[244:252])
-print "Header dump (first 672 bytes):"
-print dump(header[:672], 16, 4)
+    print("Detach time:   %04d.%02d.%02d %02d:%02d:%02d" % dsGetDBLogTimeStampStr(header[88:96]))
+print("Consistent time: %04d.%02d.%02d %02d:%02d:%02d" % dsGetDBLogTimeStampStr(header[64:72]))
+print("Recovery time:   %04d.%02d.%02d %02d:%02d:%02d" % dsGetDBLogTimeStampStr(header[244:252]))
+print("Header dump (first 672 bytes):")
+print(dump(header[:672], 16, 4))
 f.close()
